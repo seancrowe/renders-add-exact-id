@@ -143,10 +143,14 @@ const basePath = isLocal ? process.cwd() : path.dirname(process.execPath);
 
   const rendersUpdate = await json2csvAsync(rendersJson);
 
-  rendersUpdate.replace("Customer,Division", "Customer,ExactId")
-
-  writeFileSync(basePath + "/rendersUpdated.csv", rendersUpdate);
-
+  try{
+    const rendersExact = rendersUpdate.replace("Customer,Division", "Customer,ExactId")
+    writeFileSync(basePath + "/rendersUpdated.csv", rendersExact);
+  }
+  catch (e) {
+    console.log("Something went wrong writing 🙁")
+    console.log(e);
+  }
 
   console.log("File written to " + basePath + "/rendersUpdated.csv");
 
