@@ -1,36 +1,36 @@
-
-
 import waitForEnter from "./waitForEnter";
 import inquirer from "inquirer";
 import fetch from 'cross-fetch';
 import path from "path";
-import { existsSync, readFileSync, statSync, writeFileSync  } from "fs";
-import { json2csvAsync, csv2jsonAsync } from 'json-2-csv';
+import {existsSync, readFileSync, statSync, writeFileSync} from "fs";
+import {parse, unparse} from "papaparse";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 const isLocal = typeof process.pkg === "undefined";
 const basePath = isLocal ? process.cwd() : path.dirname(process.execPath);
 
-(async ()=>{
-  
+(async ()=> {
 
-  if (process.argv[2] == null) {
-    console.log("Error!!!");
-    console.log("Hey you need to drag and drop the reports CSV file from my.chili-publish.com");
-    console.log("Just drag and drop the CSv file on top this exe");
-    console.log("\n URL:");
-    console.log("https://my.chili-publish.com/Reports/TotalRendersPerMonthPerCustomer");
-    waitForEnter();
-    return;
-  }
 
-  const csvFilePath = process.argv[2];
+  // if (process.argv[2] == null) {
+  //   console.log("Error!!!");
+  //   console.log("Hey you need to drag and drop the reports CSV file from my.chili-publish.com");
+  //   console.log("Just drag and drop the CSv file on top this exe");
+  //   console.log("\n URL:");
+  //   console.log("https://my.chili-publish.com/Reports/TotalRendersPerMonthPerCustomer");
+  //   waitForEnter();
+  //   return;
+  // }
+
+  // const csvFilePath = process.argv[2];
+  // const csvFilePath = "C:\\Users\\Sean\\Downloads\\Total Renders per Month per Customer (1).csv";
+  const csvFilePath = "C:\\Users\\Sean\\Downloads\\Total Renders per Month per Customer.csv";
 
   console.log(csvFilePath);
 
   if (!existsSync(csvFilePath)) {
-    
+
     console.log("Error!!!");
     console.log("Hey buddy, the file does not exist at this path");
     console.log(csvFilePath);
@@ -69,7 +69,7 @@ const basePath = isLocal ? process.cwd() : path.dirname(process.execPath);
   }
 
 
-  const rendersJson = await csv2jsonAsync(csvString) as Array<Record<string, string>>;
+  const rendersJsonArray = parse(csvString, {header: true}).data as Array<Record<string, string>>;
 
   const inputAnswers = await inquirer.prompt([
     {
@@ -129,8 +129,8 @@ const basePath = isLocal ? process.cwd() : path.dirname(process.execPath);
   }
 
   const customers = await customerResp.json() as Array<Record<string, string>>;
-  
-  for (const customerRenders of rendersJson) {
+
+  for (const customerRenders of rendersJsonArray) {
     const customer = customers.find(customer => customer["name"] == customerRenders["Customer"]);
 
     if (customer == null) {
@@ -141,7 +141,7 @@ const basePath = isLocal ? process.cwd() : path.dirname(process.execPath);
 
   }
 
-  const rendersUpdate = await json2csvAsync(rendersJson);
+  const rendersUpdate = unparse(rendersJsonArray);
 
   try{
     const rendersExact = rendersUpdate.replace("Customer,Division", "Customer,ExactId")
