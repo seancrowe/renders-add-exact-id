@@ -13,19 +13,17 @@ const basePath = isLocal ? process.cwd() : path.dirname(process.execPath);
 (async ()=> {
 
 
-  // if (process.argv[2] == null) {
-  //   console.log("Error!!!");
-  //   console.log("Hey you need to drag and drop the reports CSV file from my.chili-publish.com");
-  //   console.log("Just drag and drop the CSv file on top this exe");
-  //   console.log("\n URL:");
-  //   console.log("https://my.chili-publish.com/Reports/TotalRendersPerMonthPerCustomer");
-  //   waitForEnter();
-  //   return;
-  // }
+  if (process.argv[2] == null) {
+    console.log("Error!!!");
+    console.log("Hey you need to drag and drop the reports CSV file from my.chili-publish.com");
+    console.log("Just drag and drop the CSv file on top this exe");
+    console.log("\n URL:");
+    console.log("https://my.chili-publish.com/Reports/TotalRendersPerMonthPerCustomer");
+    waitForEnter();
+    return;
+  }
 
-  // const csvFilePath = process.argv[2];
-  // const csvFilePath = "C:\\Users\\Sean\\Downloads\\Total Renders per Month per Customer (1).csv";
-  const csvFilePath = "C:\\Users\\Sean\\Downloads\\Total Renders per Month per Customer.csv";
+  const csvFilePath = process.argv[2];
 
   console.log(csvFilePath);
 
@@ -143,9 +141,9 @@ const basePath = isLocal ? process.cwd() : path.dirname(process.execPath);
 
   const rendersUpdate = unparse(rendersJsonArray);
 
-  try{
-    const rendersExact = rendersUpdate.replace("Customer,Division", "Customer,ExactId")
-    writeFileSync(basePath + "/rendersUpdated.csv", rendersExact);
+  try {
+    //const rendersExact = rendersUpdate.replace("Customer,Division", "Customer,ExactId")
+    writeFileSync(basePath + "/rendersUpdated.csv", rendersUpdate);
   }
   catch (e) {
     console.log("Something went wrong writing 🙁")
